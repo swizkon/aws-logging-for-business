@@ -39,6 +39,16 @@ http://localhost:8090
 http://localhost:9200
 ```
 
+### Logstash
+```
+C:\Dev\logstash-7.1.1\bin>logstash -f ../config/logstash-sample.conf
+```
+
+### Run with single proc for elastic and kibana
+```
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:latest
+```
+
 # Resources
 * [Hands on Elasticsearch](https://medium.com/@maxy_ermayank/hands-on-elasticsearch-8fa59d8aebfc)
 * [Elasticsearch Resources](https://medium.com/@maxy_ermayank/elasticsearch-resources-27d24f01c1dc)
