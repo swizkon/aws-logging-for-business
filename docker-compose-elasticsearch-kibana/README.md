@@ -62,6 +62,41 @@ docker run -it -p 5601:5601 -e "SERVER_NAME=localhost" -e "ELASTICSEARCH_URL=htt
 
 C:\Dev\logstash-7.1.1\bin\logstash -f C:\Dev\logstash-7.1.1\config\logstash-sample.conf
 
+```
+
+## logstash config with json
+```
+# Sample Logstash configuration for creating a simple
+# Beats -> Logstash -> Elasticsearch pipeline.
+
+input {
+  file {
+    path => "C:/Logs/MySys_Logstash*.log"
+    start_position => "beginning"
+  }
+}
+
+filter {
+      json {
+        source => "message"
+      }
+}
+
+#filter {
+#  grok {
+#    match => { "message" => "%{TIMESTAMP_ISO8601:timestamp} %{WORD:level} %{WORD:logger} : %{GREEDYDATA:messagetext}" }
+#  }
+#}
+
+output {
+  elasticsearch {
+    hosts => ["http://localhost:9200"]
+    #index => "%{[@metadata][beat]}-%{[@metadata][version]}-%{+YYYY.MM.dd}"
+    #user => "elastic"
+    #password => "changeme"
+  }
+}
+
 
 ```
 
