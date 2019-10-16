@@ -46,9 +46,17 @@ C:\Dev\logstash-7.1.1\bin>logstash -f ../config/logstash-sample.conf
 
 ### Run with single proc for elastic and kibana
 ```
+# Start elasticsearch in daemon mode
 docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --rm --name myelasticsearch docker.elastic.co/elasticsearch/elasticsearch:6.5.0
-docker run -d -p 5601:5601 -e "SERVER_NAME=localhost" -e "ELASTICSEARCH_URL=http://[IPFROM EALSTIC CONTAINER]:9200/" --rm docker.elastic.co/kibana/kibana-oss:6.5.0
 
+# Assign variabel with IP from the container
+myelasticsearchip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' myelasticsearch)
+# Print it
+echo $myelasticsearchip
+
+# Start KIbana in deamon mode
+docker run -d -p 5601:5601 -e "SERVER_NAME=localhost" -e "ELASTICSEARCH_URL=http://[IPFROM EALSTIC CONTAINER]:9200/" --rm docker.elastic.co/kibana/kibana-oss:6.5.0
+# OR interactive mode
 docker run -it -p 5601:5601 -e "SERVER_NAME=localhost" -e "ELASTICSEARCH_URL=http://[IPFROM EALSTIC CONTAINER]:9200/" --rm --name mykibana docker.elastic.co/kibana/kibana-oss:6.5.0
 
 
