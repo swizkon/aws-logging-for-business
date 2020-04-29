@@ -1,0 +1,110 @@
+
+
+docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --rm --name myelasticsearch docker.elastic.co/elasticsearch/elasticsearch:6.5.0
+
+
+
+docker run -it -p 5601:5601 -e "SERVER_NAME=localhost" -e "ELASTICSEARCH_URL=http://[IPFROM EALSTIC CONTAINER]:9200/" --rm --name mykibana docker.elastic.co/kibana/kibana-oss:6.5.0
+
+
+
+curl -X PUT "localhost:9200/logstash?pretty" -H 'Content-Type: application/json' -d'
+{
+  "mappings": {
+    "properties": {
+      "timestamp": {
+        "type":   "date",
+        "format": "yyyy-MM-dd"
+      }
+    }
+  }
+}
+'
+
+curl -X PUT "localhost:9200/logstash/_mapping?pretty" -H 'Content-Type: application/json' -d'
+{
+  "properties": {
+    "employee-id": {
+      "type": "keyword",
+      "index": false
+    }
+  }
+}
+'
+
+
+curl -XPUT http://localhost:9200/toastconnector -H 'Content-Type: application/json' -d '
+{
+"mappings" : {
+"default" : {
+"properties" : {
+"timestamp": { "type": "date", "format": "yyyy-MM-dd HH:mm:ss" },
+"severity": { "type": "string", "index": "not_analyzed" },
+"service": { "type": "string", "index": "not_analyzed" },
+"trace": { "type": "string", "index": "not_analyzed" },
+"span": { "type": "string", "index": "not_analyzed" },
+"exportable": { "type": "string", "index": "not_analyzed" },
+"pid": { "type": "string", "index": "not_analyzed" },
+"thread": { "type": "string", "index": "not_analyzed" },
+"class": { "type": "string", "index": "not_analyzed" },
+"logData": { "type": "string", "index": "not_analyzed" }
+}
+}
+}
+}
+'
+
+
+curl -X PUT "localhost:9200/_template/template_1?pretty" -H 'Content-Type: application/json' -d'
+{
+  "index_patterns": ["te*", "bar*"],
+  "settings": {
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "_source": {
+      "enabled": false
+    },
+    "properties": {
+      "host_name": {
+        "type": "keyword"
+      },
+      "created_at": {
+        "type": "date"
+      }
+    }
+  }
+}
+'
+
+curl -X PUT "localhost:9200/_template/template_1?pretty" -H 'Content-Type: application/json' -d'
+{
+  "index_patterns": ["te*", "bar*"],
+  "settings": {
+    "number_of_shards": 1
+  },
+  "mappings": {
+    "_doc": {
+      "_source": {
+        "enabled": false
+      },
+      "properties": {
+        "host_name": {
+          "type": "keyword"
+        },
+        "MissionId": {
+          "type": "keyword"
+        },
+        "ExternalOrderId": {
+          "type": "keyword"
+        },
+        "created_at": {
+          "type": "date",
+          "format": "EEE MMM dd HH:mm:ss Z YYYY"
+        }
+      }
+    }
+  }
+}
+'
+
